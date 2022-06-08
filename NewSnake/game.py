@@ -1,5 +1,3 @@
-import os.path
-
 import pygame
 import random
 from enum import Enum, IntEnum
@@ -7,7 +5,7 @@ from collections import namedtuple
 import numpy as np
 
 pygame.init()
-font = pygame.font.Font('arial.ttf', 25)
+font = pygame.font.Font('../arial.ttf', 25)
 
 
 class Direction(Enum):
@@ -77,7 +75,7 @@ class SnakeGame:
         return self.board[y, x]
 
     def get_model_data(self):
-        return np.uint8()
+        return np.array(self.board,dtype=int)
 
     def reset(self):
         # reset board
@@ -99,7 +97,9 @@ class SnakeGame:
 
         self.score = 0
         self.food = None
-        self._place_food()
+        # self._place_food()
+        self._set_board_value(self.w//2 + 4, self.h//2, Tile.FOOD)
+        self.food = Point(self.w//2 +4 , self.h//2)
         self.frame_iteration = 0
 
     def _move_snake(self) -> MoveResult:
@@ -181,7 +181,7 @@ class SnakeGame:
         move_result = self._move_snake()
 
         # check for game taking to long
-        if self.frame_iteration > 100 * len(self.snake):
+        if self.frame_iteration > 10 * len(self.snake):
             move_result = MoveResult.DIE
 
         move_reward = 0
@@ -194,7 +194,7 @@ class SnakeGame:
 
         # 5. update ui and clock
         self._update_ui()
-        self.clock.tick(SPEED)
+        # self.clock.tick(SPEED)
         # 6. return game over and score
         return True, move_reward, self._get_score()
 
@@ -235,10 +235,10 @@ class SnakeGame:
                     case Tile.WALL:
                         pygame.draw.rect(self.display, WHITE, pygame.Rect(p_x, p_y, BLOCK_SIZE, BLOCK_SIZE))
 
-        text = font.render("Score: " + str(self.score), True, WHITE)
+        text = font.render("Score: " + str(self._get_score()), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()
-
+        self.clock.tick(SPEED)
 
 if __name__ == '__main__':
     game = SnakeGame(20, 20)

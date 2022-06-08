@@ -1,54 +1,71 @@
-import keras.models
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import os
+import pygad
+import numpy
+from tensorflow import keras
+import pygad.kerasga
 
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
+from NewSnake.game import SnakeGame
+
+BOARD_H, BOARD_W = 20, 20
+
+# input_layer = keras.layers.Input(BOARD_W * BOARD_H)
+# input_layer = keras.layers.Input(shape=(BOARD_W, BOARD_H))
+
+model = keras.Sequential([
+    keras.layers.Input(shape=(20, )),
+    # keras.layers.GlobalAveragePooling2D(),
+    keras.layers.Flatten(),
+    # keras.layers.Dense(512, activation="relu"),
+    keras.layers.Dense(64, activation="linear"),
+    keras.layers.Dense(3, activation="softmax"),
+])
+model.build()
+model.summary()
+# model.add(input_layer)
+# model.add(dense_layer1)
+# model.add(dense_layer2)
+# model.add(output_layer)
+
+keras_ga = pygad.kerasga.KerasGA(model=model, num_solutions=10)
 
 
-class CNN:
-    def __init__(self, board_size: int):
-        self.model_path = "/saved-model"
-        num_filters = 8
-        filter_size = 3
-        pool_size = 2
-        actions_number = 3
+def fitness_func(solution, sol_idx):
+    # global data_inputs, data_outputs, keras_ga, model
+    global keras_ga, model
 
-        self.model = Sequential(
-            [
-                Conv2D(num_filters, filter_size, input_shape=(board_size, board_size, 1)),
-                MaxPooling2D(pool_size=pool_size),
-                Flatten(),
-                Dense(actions_number, activation='softmax'),
-            ]
-        )
-        self.model.compile(
-            "adam",
-            loss="categorical_crossentropy",
-            metrics=["accuracy"]
-        )
+    model_weights_matrix = pygad.kerasga.model_weights_as_matrix(model=model,
+                                                                 weights_vector=solution)
+    model.set_weights(weights=model_weights_matrix)
 
-    def save_model(self):
-        self.model.save(self.model_path)
+    snake = SnakeGame(BOARD_W, BOARD_H)
+    game_score = 0
+    while True:
+        data_inputs = snake.get_model_data()
+        predictions = model.predict(data_inputs)
+        print(predictions.shape)
+        predictions = predictions[0] >= predictions[0].max()
+        is_alive, step_score, game_score = snake.play_step(predictions)
+        if not is_alive:
+            break
 
-    def import_model(self):
-        self.model = keras.models.load_model(self.model_path)
+    # mae = keras.losses.MeanAbsoluteError()
+    # solution_fitness = 1.0 / (mae(data_outputs, predictions).numpy() + 0.00000001)
+    solution_fitness = game_score
+    return solution_fitness
 
-    def train(self, data):
-        self.model.fit()
 
-    def next_gen(self):
-        # 1. get models with best fitness (maybe 2 models)
-        # 2. perform crossover between them
-        # 3. add mutation to get new batch of models
-        # 4. repeat
-        # 5. profit
-        pass
+def callback_generation(ga_instance):
+    print("Generation = {generation}".format(generation=ga_instance.generations_completed))
+    print("Fitness    = {fitness}".format(fitness=ga_instance.best_solution()[1]))
 
-    def get_actions(self, game_state: [[int]]):
-        p = self.model.predict(game_state)
-        print(p)
-        return p
+
+num_generations = 250
+num_parents_mating = 5
+initial_population = keras_ga.population_weights
+
+ga_instance = pygad.GA(num_generations=num_generations,
+                       num_parents_mating=num_parents_mating,
+                       initial_population=initial_population,
+                       fitness_func=fitness_func,
+                       on_generation=callback_generation)
+
+ga_instance.run()
