@@ -1,12 +1,11 @@
 import pygad
 from tensorflow import keras
-import tensorflow as tf
 import pygad.kerasga
-import numpy as np
 
-from NewSnake3.game import SnakeGame
+from NewSnake4.game import SnakeGame
 
 BOARD_SIZE = 40
+SAVE_INTERVAL = 10
 
 model = keras.Sequential([
     keras.layers.Dense(24, activation="linear", input_shape=(24,)),
@@ -33,9 +32,10 @@ def fitness_func(solution, sol_idx):
         # print(f"inputs: {data_inputs.shape}")
         predictions = model.predict(data_inputs)
         # print(f"predictions: {predictions.shape}")
-        is_alive, step_score, game_score = snake.play_step(predictions)
+        is_alive = snake.play_step(predictions)
         if not is_alive:
             break
+    game_score = get_score(snake)
     if game_score > record:
         record = game_score
         print("######### NEW RECORD ##########")
@@ -43,8 +43,18 @@ def fitness_func(solution, sol_idx):
     return game_score
 
 
+def get_score(game: SnakeGame) -> float:
+    score = game.score
+    if game.frame_iteration < 100:
+        score += game.frame_iteration * 0.005
+    else:
+        score += 100 * 0.005
+        score += (game.frame_iteration - 100) * 0.0001
+    return score
+
+
 def callback_generation(ga_instance):
-    if ga_instance.generations_completed % 20 == 0:
+    if ga_instance.generations_completed % SAVE_INTERVAL == 0:
         ga_instance.save(f"{ga_instance.generations_completed}")
         # model.save(f"{ga_instance.generations_completed}")
         # model.save_weights(f"{ga_instance.generations_completed}.h5")
@@ -82,8 +92,8 @@ ga_instance = pygad.GA(num_generations=num_generations,
                        keep_parents=keep_parents,
                        on_generation=callback_generation)
 
-MODEL_TO_LOAD = None
-# MODEL_TO_LOAD = "3020"
+# MODEL_TO_LOAD = None
+MODEL_TO_LOAD = "saved/40"
 if MODEL_TO_LOAD is not None:
     print("load model")
     ga_instance = pygad.load(filename=MODEL_TO_LOAD)

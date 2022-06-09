@@ -43,9 +43,7 @@ SPEED = 10
 
 DISPLAY = True
 MULTI_FOOD = False
-
-
-# DISPLAY = False
+PLACE_WALLS = True
 
 
 class SnakeGame:
@@ -91,9 +89,9 @@ class SnakeGame:
 
         self.score = 0
         self.food = None
+        if PLACE_WALLS:
+            self._place_walls()
         self._place_food()
-        # self._set_board_value(self.w // 2 + 4, self.h // 2, Tile.FOOD)
-        # self.food = Point(self.w // 2 + 4, self.h // 2)
         self.frame_iteration = 0
 
     def _place_food(self):
@@ -101,19 +99,21 @@ class SnakeGame:
         y = random.randint(0, self.h - 1)
 
         if self.board[y, x] != Tile.EMPTY:
-            self._place_food()
+            return self._place_food()
 
         self._set_board_value(x, y, Tile.FOOD)
         self.food = Point(x, y)
 
     def _place_walls(self):
-        y = random.randint(0, self.h - 1)
-        for i in range(0, self.w // 2):
-            self.board[y][i] = Tile.WALL
+        x = random.randint(0, self.w // 3)
+        for i in range(0, self.h // 2 - 1):
+            self._set_board_value(x, i, Tile.WALL)
+            # self.board[i][x] = Tile.WALL
 
-        x = random.randint(0, self.w - 1)
-        for i in range(0, self.h // 2):
-            self.board[i][x] = Tile.WALL
+        x = (x + self.w // 2) % self.w
+        for i in range(0, self.h // 2 - 1):
+            self._set_board_value(x, self.h - i - 1, Tile.WALL)
+            # self.board[self.w - i - 1][x] = Tile.WALL
 
     def _clear_board(self):
         self.board = np.full((self.h, self.w), Tile.EMPTY)
@@ -128,7 +128,7 @@ class SnakeGame:
         direction = np.argmax(action[0])
         return Direction(direction)
 
-    def play_step(self, action) -> (bool, int, int):
+    def play_step(self, action) -> bool:
         self.frame_iteration += 1
         # 1. collect user input
         for event in pygame.event.get():
@@ -142,30 +142,29 @@ class SnakeGame:
         move_result = self._move_snake(direction)
 
         # check for game taking to long
-        if self.frame_iteration > self.w * 2 * len(self.snake):
+        if self.frame_iteration > self.w * len(self.snake):
             move_result = MoveResult.DIE
 
         move_reward = 0
         match move_result:
             case MoveResult.ATE_FOOD:
                 self.score += 1
-                move_reward = 10
                 self._place_food()
             case MoveResult.DIE:
                 self.score -= 0.5
-                return False, 0, self.score
+                return False
 
         # 5. update ui and clock
         if DISPLAY:
             self._update_ui()
 
-        if MULTI_FOOD and self.frame_iteration % 30:
+        if MULTI_FOOD and self.frame_iteration % 30 == 0:
             self._place_food()
 
         # self.clock.tick(SPEED)
         # 6. return game over and score
-        self.score += 0.01
-        return True, move_reward, self.score
+        # self.score += 0.01
+        return True
 
     def _move_snake(self, direction: Direction) -> MoveResult:
         new_head = None
