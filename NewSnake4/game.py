@@ -42,6 +42,8 @@ BLOCK_SIZE = 20
 SPEED = 10
 
 DISPLAY = True
+
+
 # DISPLAY = False
 
 
@@ -226,51 +228,46 @@ class SnakeGame:
 
     def _get_dist(self, dx: int, dy: int):
         return np.array([
-            self._get_dist_to_wall(dx, dy) / self.w,
+            self._get_dist_to_wall(dx, dy),
             self._get_dist_to_body(dx, dy),
             self._get_dist_to_food(dx, dy),
         ])
 
-    def _get_dist_to_wall(self, dx: int, dy: int) -> int:
+    def _get_dist_to_wall(self, dx: int, dy: int) -> float:
         dist = 0
         x = self.head.x
         y = self.head.y
         while True:
-            if self._get_board_value(x, y) is Tile.WALL:
-                return dist
             dist += 1
+            if self._get_board_value(x, y) is Tile.WALL:
+                break
             x += dx
             y += dy
             if not 0 <= x < self.w or not 0 <= y < self.h:
-                return dist
+                break
+        return 1 / dist
 
     def _get_dist_to_body(self, dx: int, dy: int) -> int:
-        dist = 0
         x = self.head.x
         y = self.head.y
         while True:
             if Point(x, y) in self.snake[1:]:
-                break
-            dist += 1
+                return 1
             x += dx
             y += dy
             if not 0 <= x < self.w or not 0 <= y < self.h:
-                return 2
-        return dist / self.w
+                return 0
 
     def _get_dist_to_food(self, dx: int, dy: int) -> int:
-        dist = 0
         x = self.head.x
         y = self.head.y
         while True:
             if self._get_board_value(x, y) is Tile.FOOD:
-                break
-            dist += 1
+                return 1
             x += dx
             y += dy
             if not 0 <= x < self.w or not 0 <= y < self.h:
-                return 2
-        return dist / self.w
+                return 0
 
     def _update_ui(self):
         self.display.fill(BLACK)
