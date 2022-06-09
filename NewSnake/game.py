@@ -16,11 +16,11 @@ class Direction(Enum):
 
 
 class Tile(IntEnum):
-    EMPTY = 1
-    SNAKE_HEAD = 2
-    SNAKE_BODY = 3
-    FOOD = 4
-    WALL = 5
+    EMPTY = 0
+    SNAKE_HEAD = 1
+    SNAKE_BODY = 2
+    FOOD = 3
+    WALL = 4
 
 
 class MoveResult(Enum):
@@ -49,7 +49,7 @@ class SnakeGame:
         self.snake = None
         self.direction = None
         self.food = None
-
+        self.score = 0
         self.frame_iteration = None
         self.score = None
         self.board = None
@@ -75,7 +75,57 @@ class SnakeGame:
         return self.board[y, x]
 
     def get_model_data(self):
-        return np.array(self.board,dtype=int)
+        return np.array(self.board / 4, dtype=int)
+
+    def get_model_data_2(self):
+        wall_0, body_0, food_0 = (self._get_dist(1, 0) / self.w)  # right
+        wall_1, body_1, food_1 = self._get_dist(1, 1)  # top right
+        wall_2, body_2, food_2 = self._get_dist(0, 1)  # top
+        wall_3, body_3, food_3 = self._get_dist(-1, 1)  # top left
+        wall_4, body_4, food_4 = self._get_dist(-1, 0)  # left
+        wall_5, body_5, food_5 = self._get_dist(-1, -1)  # bottom left
+        wall_6, body_6, food_6 = self._get_dist(0, -1)  # bottom
+        wall_7, body_7, food_7 = self._get_dist(1, -1)  # bottom right
+        return [
+            wall_0, body_0, food_0,
+            wall_1, body_1, food_1,
+            wall_2, body_2, food_2,
+            wall_3, body_3, food_3,
+            wall_4, body_4, food_4,
+            wall_5, body_5, food_5,
+            wall_6, body_6, food_6,
+            wall_7, body_7, food_7,
+        ]
+
+    def _get_dist(self, dx: int, dy: int):
+        dist_to_wall = 0
+        x = self.head.x
+        y = self.head.y
+        while True:
+            if self._get_board_value(x, y) is Tile:
+                break
+            dist_to_wall += 1
+            x += dx
+            y += dy
+            if not 0 <= x < self.w or not 0 <= y < self.h:
+                break
+        return np.array([
+            dist_to_wall,
+            self._get_dist_to_tile(dx, dy, Tile.SNAKE_BODY),
+            self._get_dist_to_tile(dx, dy, Tile.FOOD),
+        ])
+
+    def _get_dist_to_tile(self, dx: int, dy: int, tile: Tile) -> int:
+        dist = 0
+        x = self.head.x
+        y = self.head.y
+        while 0 <= x < self.w and 0 <= y < self.h:
+            if self._get_board_value(x, y) is tile:
+                break
+            dist += 1
+            x += dx
+            y += dy
+        return dist
 
     def reset(self):
         # reset board
@@ -97,9 +147,9 @@ class SnakeGame:
 
         self.score = 0
         self.food = None
-        # self._place_food()
-        self._set_board_value(self.w//2 + 4, self.h//2, Tile.FOOD)
-        self.food = Point(self.w//2 +4 , self.h//2)
+        self._place_food()
+        # self._set_board_value(self.w // 2 + 4, self.h // 2, Tile.FOOD)
+        # self.food = Point(self.w // 2 + 4, self.h // 2)
         self.frame_iteration = 0
 
     def _move_snake(self) -> MoveResult:
@@ -147,11 +197,11 @@ class SnakeGame:
         self.food = Point(x, y)
 
     def _place_walls(self):
-        y = random.randint(0, self.h-1)
+        y = random.randint(0, self.h - 1)
         for i in range(0, self.w // 2):
             self.board[y][i] = Tile.WALL
 
-        x = random.randint(0, self.w-1)
+        x = random.randint(0, self.w - 1)
         for i in range(0, self.h // 2):
             self.board[i][x] = Tile.WALL
 
@@ -181,15 +231,18 @@ class SnakeGame:
         move_result = self._move_snake()
 
         # check for game taking to long
-        if self.frame_iteration > 10 * len(self.snake):
+        if self.frame_iteration > 30 * len(self.snake):
+            self.score -= 0.1
             move_result = MoveResult.DIE
 
         move_reward = 0
         match move_result:
             case MoveResult.ATE_FOOD:
+                self.score = self.score + 0.1
                 move_reward = 10
                 self._place_food()
             case MoveResult.DIE:
+                self.score = self.score
                 return False, 0, self._get_score()
 
         # 5. update ui and clock
@@ -199,7 +252,8 @@ class SnakeGame:
         return True, move_reward, self._get_score()
 
     def _get_score(self):
-        return len(self.snake)
+        return self.score
+        # return (len(self.snake) - 3) / 10
 
     def is_collision(self, pt=None):
         if pt is None:
@@ -238,7 +292,7 @@ class SnakeGame:
         text = font.render("Score: " + str(self._get_score()), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()
-        self.clock.tick(SPEED)
+
 
 if __name__ == '__main__':
     game = SnakeGame(20, 20)
