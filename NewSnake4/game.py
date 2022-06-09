@@ -42,6 +42,7 @@ BLOCK_SIZE = 20
 SPEED = 10
 
 DISPLAY = True
+MULTI_FOOD = False
 
 
 # DISPLAY = False
@@ -157,6 +158,10 @@ class SnakeGame:
         # 5. update ui and clock
         if DISPLAY:
             self._update_ui()
+
+        if MULTI_FOOD and self.frame_iteration % 30:
+            self._place_food()
+
         # self.clock.tick(SPEED)
         # 6. return game over and score
         self.score += 0.01
