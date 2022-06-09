@@ -82,7 +82,7 @@ Kierunki uzyte w poprzeniej wersji slabo sie sprawdzaly, mialy duza tendencje do
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake3/model.py)
 
-- 4.4 Wersja (narazie) ostateczna - Nie dostaje informacji o odleglosci od jedzenia i jego ciala tylko czy w danym kierunku sie ono znajduje, dalej otrzymuje informacje o odleglosci od sciany
+- 4.4 Wersja (narazie) ostateczna - Nie dostaje informacji o odleglosci od jedzenia i jego ciala tylko czy w danym kierunku sie ono znajduje, dalej otrzymuje informacje o odleglosci od sciany. Zmiana generacji scian na dwie pionowe, aby unkinac sytuacji jedzenia zamknietego za scianami bez mozliwosci dostania sie do niego.
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake4/model.py)
 
