@@ -93,3 +93,7 @@ Pomysly rozwoju:
 -- Nauczenie weza gry bez scian, a nastepnie gdy nauczy sie podazac za jedzeniem, wykorzystanie tego modelu na planszy z dodatkowymi scianami
 
 -- Zamiast zabijac weza gdy wybierze przeciwny kierunek - ignorowanie akcji lub samo odebranie punktow. Moze to przyspieszyc nauke poprzez zmniejszenie ilosci poczatkowcyh zgonow.
+
+### Wnioski
+
+W najnowszym modelu wykorzystujacym PyGAD widac potencjal, jednak tempo poprawy funkcjonowania jest bardzo wolne i prawdopodbnie bardzo czasochlonne. Trenowanie modelu nie poprawia fakt, ze jedynie jedna gra moze odbywac sie jednoczesnie przez co czas trenowania jednego osobnika trwa bardzo dlugo. Widac proby unikniecia kolizji ze scianami, czasem jablko w polu widzenia sprawia ze waz skreca. Duza poprawe zauwazono po zastosowaniu cyklicznego dodawania jablek cos zwiekszylo szanse na zjedzenia jablka przez co waz lepiej je rozpoznaje i wie ze powinien kierowac sie w ich kierunku. Siec konwolucyjna nie przyniosla oczekiwanych efektow. Ciezko bylo rozrozniac poszczegolne typy komorek, byc moze lepszy rezultat otrzymalibysmy gdyby przekazywac modelowi GAN wiecej informacji niz tylko smam plansze. Najlepiej sprawujacym sie modelem byl pierwszy ze zwyklym Q-learningiem, ktory szybko uczyl sie podazac za jablkami (nawet tysiac iteracji) natomiast nie byl w stanie on w tamtej formie rozpoznawac scian i wchodzil sam w siebie. Model najnowszy (reinforcement learning + algorytm genetyczny) prawdopodbnie uzyskalby najlepsze rezultaty jednak nie wystarczylo nam czasu na odpowiednie wytrenowaniego.
