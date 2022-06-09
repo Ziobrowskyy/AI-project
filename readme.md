@@ -91,3 +91,5 @@ Pomysly rozwoju:
 -- zwiekszenie ilosci jedzenia, aby zwiekszyc szanse weza na losowe trafienie na nie, aby ulatwic mu zrozumienie, ze jedzenie dobre.
 
 -- Nauczenie weza gry bez scian, a nastepnie gdy nauczy sie podazac za jedzeniem, wykorzystanie tego modelu na planszy z dodatkowymi scianami
+
+-- Zamiast zabijac weza gdy wybierze przeciwny kierunek - ignorowanie akcji lub samo odebranie punktow. Moze to przyspieszyc nauke poprzez zmniejszenie ilosci poczatkowcyh zgonow.
