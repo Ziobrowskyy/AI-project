@@ -4,11 +4,11 @@
 
 Nasz pierwszy model pochodził z pierwszego lepszego [repo](https://github.com/python-engineer/snake-ai-pytorch) typu "neural network learns snake". Model napisany przy użyciu pytorcha, wykorzystywał bardzo prosty Reinforcement learning - Q-learning. Model dosyć szybko uczył się podążać za jabłkiem, jednak jego problemem było nie zabijanie się o samego siebie, jednak nie zabijał się o krawędzie planszy. Postanowiliśmy zmodyfikować grę, wstawiając dwie ściany - pionową i poziomą, aby sprawdzić czy tak jak granic, będzie w stanie nauczyć się jej unikać. Początkowo po kilkudziesięciu iteracjach zaczynał kręcić się w kółko nie mogąc pozbyć się traumy rozbijania się o ściany. 
 	
-![fota](1.gif)
+![fota](https://puu.sh/J4VAF/28e40355cb.gif)
 
 Zmniejszyliśmy zatem ilość ścian do 1. Rozwiązało to problem kręcenia się w kółko Niestety pomimo podawania do modelu informacji czy jest krok od śmierci, nawet po 90000 iteracji dalej ignorował ściane, biorąc za większy priorytet prostoliniową scieżkę do jabłka.
 
-![fota](2.gif)
+![fota](https://puu.sh/J4VB1/72dcbd8cdc.gif)
 
  Problem wynikał między innymi z danych podawanych do modelu na temat jedzenia. Model otrzymywał jedynie informację o położeniu jabłka względem węża, bez odległości, czy konkretnej pozycji np. (lewo, góra). Jego wizja także byla bardzo ograniczona sprowadzając się do wykrywania śmierci w obrębie jednej kratki. Ze względu na budowę samej gry nie byliśmy w stanie podawać do modelu wiecej informacji. Pierwszą zmianą było zmiana planszy na dwuwymiarową tablice.
  
