@@ -41,11 +41,10 @@ GREEN = (0, 255, 0)
 BLOCK_SIZE = 20
 SPEED = 10
 
-DISPLAY = True
-MULTI_FOOD = False
-
-
 # DISPLAY = False
+DISPLAY = False
+
+MULTI_FOOD = True
 
 
 class SnakeGame:
@@ -159,7 +158,7 @@ class SnakeGame:
         if DISPLAY:
             self._update_ui()
 
-        if MULTI_FOOD and self.frame_iteration % 30:
+        if MULTI_FOOD and self.frame_iteration % 30 == 0:
             self._place_food()
 
         # self.clock.tick(SPEED)

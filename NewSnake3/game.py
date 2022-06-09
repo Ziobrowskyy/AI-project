@@ -41,8 +41,8 @@ GREEN = (0, 255, 0)
 BLOCK_SIZE = 20
 SPEED = 10
 
-DISPLAY = True
-# DISPLAY = False
+# DISPLAY = True
+DISPLAY = False
 
 
 class SnakeGame:

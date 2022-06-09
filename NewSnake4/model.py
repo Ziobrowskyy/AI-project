@@ -4,7 +4,7 @@ import tensorflow as tf
 import pygad.kerasga
 import numpy as np
 
-from NewSnake3.game import SnakeGame
+from NewSnake4.game import SnakeGame
 
 BOARD_SIZE = 40
 
