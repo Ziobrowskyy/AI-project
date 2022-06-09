@@ -24,6 +24,7 @@ Jednak nie bylimy w stanie doprowadzic go do dzialania, dlatego tez postanowilis
 Trzeci model wykorzystuje reinforcement learning polaczony z algorytmem ewolucyjnym (Keras oraz PyGAD) w celu optymalizacji nauki modelu. Model otrzymuje calosc planszy, gdzie w kazdy z typow komorki ma inna wartosc (np. puste - 0, sciana - 1 itd).  Kolejny model ktory mial tendencje do krecenia sie w kolko w celu unikniecia smierci od scian, nie nauczyl sie podazac za jedzeniem, nie rozpoznawal go. Model po ok 10000 iteracji nie wykazal zadnych zmian.
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake/model.py)
+
 4. Czwarty model
 
 Czwarty i aktualny model posiadal kilka wersji z malymi tweakami.
@@ -61,6 +62,7 @@ keep_parents = -1
 - 4.1 Model po 3200 generacjach niczego sie nie nauczyl, postanowil szybko konczyc swoj  zywot wlatujac w najblizsza sciane. Ignorowal informacje o jedzeniu, nie unikal scian. 
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake/model.py) 
+
 Nastapila lekka zmiana architektury, dodalismy kolejna warstwe dense w celu sprawdzenia  wplywu na zachowanie modelu, zmienilismy takze jedna z aktywacji z relu na linear.
 ```python
 model = keras.Sequential([
@@ -75,12 +77,15 @@ Kierunki uzyte w poprzeniej wersji slabo sie sprawdzaly, mialy duza tendencje do
 - 4.2 Wersja wprowadzila gratyfikowanie weza za przezycie kazdej klatki ulamkami punktow aby sprobowac zwiekszyc jego zywotnosc. Waz po setkach generacji faktycznie wydluzyl swoj zywot poprzez krecenie sie w kolko az do osiagniecia limitu iteracji.
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake2/model.py)
+
 - 4.3 Aby skontrowac wezowa karuzele, zwiekszylismy poczatkowa dlugosc weza do 5 kratek, aby nie byl w stanie na starcie zaczac sie krecic. Po prostu wchodzil sam w siebie i umieral. Tracac mozliwosc krecenia sie na starcie zaczal chodzic zygzakiem, aby przetrwac jak najdluzej przed uzderzeniem w sciane, a w koncu po okresie bardzo chaotycznego zachowania raz na jakis czas unikal zderzenia ze sciana. Zaobserwowalismy takze lekkie zainteresowanie jedzeniem, czasami podazal w kierunku jedzenia, aczkolwiek w przeciagu ok. 500 generacji nie przynioslo to lepszych rezultatow.
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake3/model.py)
+
 - 4.4 Wersja (narazie) ostateczna - Nie dostaje informacji o odleglosci od jedzenia i jego ciala tylko czy w danym kierunku sie ono znajduje, dalej otrzymuje informacje o odleglosci od sciany
 
 [Kod do modelu](https://github.com/Ziobrowskyy/AI-project/blob/develop/NewSnake4/model.py)
+
 Pomysly rozwoju:
 
 -- zwiekszenie ilosci jedzenia, aby zwiekszyc szanse weza na losowe trafienie na nie, aby ulatwic mu zrozumienie, ze jedzenie dobre.
